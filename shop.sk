@@ -1,0 +1,251 @@
+options:
+	shopName: "&6Shop"
+	buyMenuName: "&aBuy"
+	
+	buildingBlockCat: "&bBuilding Blocks"
+	redstoneCat: "&cRedstone"
+	gensCat: "&eGens"
+	toolsCat: "&bTools"
+	decoCat: "&aDecorations"
+	farmingCat: "&eFarming"
+	miscCat: "&7Misc."
+	armorCat: "&bArmor"
+	
+	buildingBlockCatName: ""
+	redstoneCatName: ""
+	gensCatName: ""
+	toolsCatName: ""
+	decoCatName: ""
+	farmingCatName: ""
+	miscCatName: ""
+	armorCatName: ""
+
+command /shop:
+	trigger:
+		shop(player)
+
+command /registerItem <string> <int> <string> <string>:
+	permission: op
+	trigger:
+		registerItem(arg-1, player's tool, arg-2, arg-3, arg-4)
+
+function registerItem(id: string,i: item, pr: int, cat: string, sName: string):
+	set string tag "id" of custom nbt of {_i} to {_id}
+	set string tag "cat" of custom nbt of {_i} to {_cat}
+	set {shopTable::%{_cat}%::%{_id}%::item} to {_i}
+	set {shopTable::%{_cat}%::%{_id}%::lore::*} to {_i}'s lore
+	set {shopTable::%{_cat}%::%{_id}%::name} to {_i}'s name
+	set {shopTable::%{_cat}%::%{_id}%::shopName} to {_sName}
+	set {shopTable::%{_cat}%::%{_id}%::price} to {_pr}
+
+function getACItem(id: string, cat: string) :: item:
+	set {_i} to {shopTable::%{_cat}%::%{_id}%::item}
+	set name of {_i} to {shopTable::%{_cat}%::%{_id}%::name}
+	set lore of {_i} to {shopTable::%{_cat}%::%{_id}%::lore::*}
+	return {_i}
+	
+function getShopItem(id: string, cat: string) :: item:
+	set {_i} to {shopTable::%{_cat}%::%{_id}%::item}
+	set name of {_i} to {shopTable::%{_cat}%::%{_id}%::shopName}
+	set lore of {_i} to {shopTable::%{_cat}%::%{_id}%::lore::*}
+	return {_i}
+
+function buyItem(p: player, id: string, cat: string, amt: int=1):
+	set {_i} to getACItem({_id}, {_cat})
+	if {_p}'s balance >= {shopTable::%{_cat}%::%{_id}%::price}*{_amt}:
+		give {_p} {_amt} of {_i}
+		remove {shopTable::%{_cat}%::%{_id}%::price}*{_amt} from {_p}'s balance
+	else:
+		send "&cInsufficient funds" to {_p}
+
+function buyMenu(p: player, i: item):
+	set {-buyMenu::%{_p}%} to chest inventory with 3 rows named {@buyMenuName}
+	loop 28 times:
+		set slot (loop-value -1) of {-buyMenu::%{_p}%} to gray stained glass pane named "&7"
+	set slot 10 of {-buyMenu::%{_p}%} to red stained glass pane named "&c&l-32"
+	set slot 11 of {-buyMenu::%{_p}%} to red stained glass pane named "&c&l-16"
+	set slot 12 of {-buyMenu::%{_p}%} to red stained glass pane named "&c&l-1"
+	
+	set slot 13 of {-buyMenu::%{_p}%} to {_i}
+	
+	set slot 14 of {-buyMenu::%{_p}%} to lime stained glass pane named "&a&l+1"
+	set slot 15 of {-buyMenu::%{_p}%} to lime stained glass pane named "&a&l+16"
+	set slot 16 of {-buyMenu::%{_p}%} to lime stained glass pane named "&a&l+32"
+	
+	set slot 22 of {-buyMenu::%{_p}%} to emerald named "&bBuy"
+	
+	open {-buyMenu::%{_p}%} to {_p}
+
+function shop(p: player):
+	set {-shop::%{_p}%} to chest inventory with 5 rows named {@shopName}
+	
+	set {_border::*} to (numbers between 0 and 9), 17,18,26,27,(numbers between 35 and 45)
+	loop {_border::*}:
+		set slot loop-value of {-shop::%{_p}%} to gray stained glass pane named "&7"
+		
+	set slot 11 of {-shop::%{_p}%} to grass block named {@buildingBlockCat}
+	set slot 13 of {-shop::%{_p}%} to redstone named {@redstoneCat}
+	set slot 15 of {-shop::%{_p}%} to hay block named {@gensCat}
+	set slot 20 of {-shop::%{_p}%} to (((diamond pickaxe) with hide attributes item flag) named {@toolsCat})
+	set slot 24 of {-shop::%{_p}%} to flower pot named {@decoCat}
+	set slot 29 of {-shop::%{_p}%} to (((diamond hoe) with hide attributes item flag) named {@farmingCat})
+	set slot 31 of {-shop::%{_p}%} to music disc stal named {@miscCat}
+	set slot 33 of {-shop::%{_p}%} to (((diamond helmet) with hide attributes item flag) named {@armorCat})
+	
+	open {-shop::%{_p}%} to {_p}
+	
+function catShop(p: player, cat: string, pg: int=0, snap: boolean=true) :: inventory: 
+	set {-catShop::%{_p}%} to chest inventory with 5 rows named getCatShopName({_cat})
+	set {_border::*} to (numbers between 0 and 9), 17,18,26,27,(numbers between 35 and 45)
+	if {_snap} is true:
+		loop {_border::*}:
+			set slot loop-value of {-catShop::%{_p}%} to gray stained glass pane named "&7"
+		set slot 40 of {-catShop::%{_p}%} to barrier named "&cBack"
+	
+		
+		
+	set {_sel} to 21*{_pg}
+	set {_s} to 9
+	loop {shopTable::%{_cat}%::*}:
+		add 1 to {_sel}
+		add 1 to {_s}
+		{shopTable::%{_cat}%::%{_sel}%} is not set:
+			stop the loop
+		loop 2 times:
+			{_border::*} contains {_s}:
+				add 1 to {_s}
+		{_s} < 35
+		set slot {_s} of {-catShop::%{_p}%} to getShopItem(loop-value, {_cat})
+	
+	set {_ar} to arrow
+	set int tag "pg" of custom nbt of {_ar} to {_pg}
+	set string tag "cat" of custom nbt of {_ar} to {_cat}
+	set slot 44 of {-catShop::%{_p}%} to {_ar} named "&cNext"
+	if {_pg} > 0:
+		set slot 36 of {-catShop::%{_p}%} to {_ar} named "&cBack"	
+	
+	open {-catShop::%{_p}%} to {_p}
+	
+function getCatShopName(cat: string) :: string:
+	return switch return {_cat}:
+		case "building" -> {@buildingBlockCatName}
+		case "redstone" -> {@redstoneCatName}
+		case "gens" -> {@gensCatName}
+		case "tools" -> {@toolsCatName}
+		case "decorations" -> {@decoCatName}
+		case "farming" -> {@farmingCatName}
+		case "misc" -> {@miscCatName}
+		case "armor" -> {@armorCatName}
+	
+on inventory click:
+	if player's current inventory is {-shop::%player%}:
+		cancel event
+		if event-inventory is not {-shop::%player%}:
+			stop
+		if event-slot is 11:
+			catShop(player, "building", 0)
+		if event-slot is 13:
+			catShop(player, "redstone", 0)
+		if event-slot is 15:
+			catShop(player, "gens", 0)
+		if event-slot is 20:
+			catShop(player, "tools", 0)
+		if event-slot is 24:
+			catShop(player, "decoration",0)
+		if event-slot is 29:
+			catShop(player, "farming", 0)
+		if event-slot is 31:
+			catShop(player, "misc", 0)
+		if event-slot is 33:
+			catShop(player, "armor", 0)
+			
+	if player's current inventory is {-catShop::%player%}:
+		cancel event
+		if event-inventory is not {-catShop::%player%}:
+			stop
+		if event-slot is 40:
+			shop(player)
+		if event-slot is 36:
+			if event-item is not arrow:
+				stop
+			if custom nbt of event-item does not have tag "pg":
+				stop
+			if custom nbt of event-item does not have tag "cat":
+				stop
+			catShop(player, (string tag "cat" of custom nbt of event-item), ((int tag "pg" of custom nbt of event-item)-1))
+		if event-slot is 44:
+			if event-item is not arrow:
+				stop
+			if custom nbt of event-item does not have tag "pg":
+				stop
+			if custom nbt of event-item does not have tag "cat":
+				stop
+			catShop(player, (string tag "cat" of custom nbt of event-item), ((int tag "pg" of custom nbt of event-item)+1))
+		if event-item is not gray stained glass pane:
+			
+			
+			
+	if player's current inventory is {-buyMenu::%player%}:
+		cancel event
+		if event-inventory is not {-buyMenu::%player%}:
+			stop
+			
+		set {_i} to slot 13 of event-inventory
+		set {_n} to item amount of {_i}
+		if event-slot is 10:
+			if {_n} > 1:
+				remove 32 from item amount of {_i}
+				set {_n} to item amount of {_i}
+				if {_n} < 1:
+					set item amount of {_i} to 1
+				set slot 13 of event-inventory to {_i}
+			
+		if event-slot is 11:
+			if {_n} < 1:
+				remove 16 from item amount of {_i}
+				set {_n} to item amount of {_i}
+				if {_n} < 1:
+					set item amount of {_i} to 1
+				set slot 13 of event-inventory to {_i}
+			
+		if event-slot is 12:
+			if {_n} > 1:
+				remove 1 from item amount of {_i}
+				set {_n} to item amount of {_i}
+				if {_n} < 1:
+					set item amount of {_i} to 1
+				set slot 13 of event-inventory to {_i}
+			
+			
+			
+		if event-slot is 14:
+			if {_n} < 64:
+				add 1 to item amount of {_i}
+				set {_n} to item amount of {_i}
+				if {_n} > 64:
+					set item amount of {_i} to 64
+				set slot 13 of event-inventory to {_i}
+			
+		if event-slot is 15:
+			if {_n} < 64:
+				add 16 to item amount of {_i}
+				set {_n} to item amount of {_i}
+				if {_n} > 64:
+					set item amount of {_i} to 64
+				set slot 13 of event-inventory to {_i}
+			
+		if event-slot is 16:
+			if {_n} < 64:
+				add 32 to item amount of {_i}
+				set {_n} to item amount of {_i}
+				if {_n} > 64:
+					set item amount of {_i} to 64
+				set slot 13 of event-inventory to {_i}
+		
+		if event-slot is 22:
+			broadcast {_n}
+			if custom nbt of event-item has tag "cat":
+				if custom nbt of event-item has tag "id":
+					buyItem(player, (string tag "cat" of custom nbt of event-item), (string tag "id" of custom nbt of event-item), {_n})
+		
+		

@@ -1,0 +1,29 @@
+options:
+	rookie: unbreakable fishing rod named "&eRookie Rod" with lore "" and "&7Man this rod stinks. You might need a new one."
+	basic: unbreakable fishing rod named "&1Basic Rod" with lore "" and "&7Not the greatest. For sure better than the old one."
+	pro: unbreakable fishing rod named "&2Pro Rod" with lore "" and "&7Your fishing journey has just started and you are still far."
+	mythical: unbreakable fishing rod named "&5Mythical Rod" with lore "" and "&7What a power rod. Still not the best one."
+	godly: unbreakable fishing rod named "&6Godly Rod" with lore "" and "&7The rod of rods. Only spoke of in ancient scriptures."
+	
+on load:
+	clear {rods::*}
+	wait 1 tick
+	add {@rookie} to {rods::*}
+	add {@basic} to {rods::*}
+	add {@pro} to {rods::*}
+	add {@mythical} to {rods::*}
+	add {@godly} to {rods::*}
+	
+function commonDrops(f: itemtype, n: text, w: text, s: text) :: item:
+	set name of {_f} to {_n}
+	set lore of {_f} to "&7Weight: %{_w}%" and "&7Sell Price: $%{_s}%"
+	return {_f}
+
+command /giverods:
+	trigger:
+		give player {rods::*}
+
+on fish:
+	if fishing state is CAUGHT_FISH:
+		if name of player's held item contains "&eRookie Rod":
+			set item of caught entity to commonDrops(cod, "&bCommon Fish", "0.32 kg", "5.00")

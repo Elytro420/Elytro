@@ -1,0 +1,70 @@
+command /lootboxes [<text>] [<player>] [<number>]:
+	permission: op
+	trigger:
+		if arg-1 is "elytro":
+			if arg-2 is not set:
+				if arg-3 is set:
+					give player arg 3 chest named "<#BC4AEC>&lElytro Lootbox"
+				else:
+					give player 1 chest named "<#BC4AEC>&lElytro Lootbox"
+			else:
+				if arg-3 is set:
+					give arg 2 arg 3 of chest named "<#BC4AEC>&lElytro Lootbox"
+				else:
+					give arg 2 1 chest named "<#BC4AEC>&lElytro Lootbox"
+		else:
+			send "&cPlease specify a lootbox" to player
+
+on place of chest:
+	if name of player's tool contains "<#BC4AEC>&lElytro Lootbox":
+		player is in world "plots"
+		cancel event
+		remove 1 of player's tool from player
+		broadcast ""
+		broadcast "&8| <#BC4AEC>&l%player% &7is opening an <#BC4AEC>&lElytro Lootbox"
+		broadcast ""
+		wait 1 tick
+		lootboxRewards(player, "Elytro")
+	else if name of offhand item of player contains "<#BC4AEC>&lElytro Lootbox":
+		player is in world "plots"
+		cancel event
+		remove 1 of offhand item of player from player
+		broadcast ""
+		broadcast "&8| <#BC4AEC>&l%player% &7is opening an <#BC4AEC>&lElytro Lootbox"
+		broadcast ""
+		wait 1 tick
+		lootboxRewards(player, "Elytro")
+
+function lootboxRewards(p: player, l: text):
+	if {_l} = "Elytro":
+		set {_s} to random integer between 250 and 750
+		set {_b} to random integer between 250000 and 750000
+		set {_k} to random integer between 5 and 10
+		set {_r} to "No Rank" # Default value
+		
+		# 25% chance for a 30-day rank
+		chance of 25%:
+			set {_r} to "30d Rank"
+		if {_r} = "No Rank":
+			set {_sw} to random integer between 2 and 3
+			add {_s} to {souls::%{_p}'s uuid%}
+			execute console command "/givekey legendary %{_p}% %{_k}%"
+			add {_b} to {_p}'s balance
+			broadcast "               <#BC4AEC>&lREWARDS"
+			broadcast ""
+			broadcast "&8| <#BC4AEC>&l%{_s}% &7Souls"
+			broadcast "&8| <#BC4AEC>&l%{_b}% &7Money"
+			broadcast "&8| <#BC4AEC>&l%{_k}% &7Legendary Keys"
+			broadcast "&8| <#BC4AEC>&l%{_sw}%x &7Sellwand"
+		else if {_r} = "30d Rank":
+			set {_sw} to random integer between 2 and 3
+			add {_s} to {souls::%{_p}'s uuid%}
+			add {_b} to {_p}'s balance
+			execute console command "/givekey legendary %{_p}% %{_k}%"
+			broadcast "               <#BC4AEC>&lREWARDS"
+			broadcast ""
+			broadcast "&8| <#BC4AEC>&l%{_s}% &7Souls"
+			broadcast "&8| <#BC4AEC>&l%{_b}% &7Money"
+			broadcast "&8| <#BC4AEC>&l%{_k}% &7Legendary Keys"
+			broadcast "&8| <#BC4AEC>&l%{_sw}%x &7Sellwand"
+			broadcast "&8| <#BC4AEC>&lVIP &7Rank (30d)"

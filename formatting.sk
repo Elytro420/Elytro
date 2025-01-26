@@ -1,0 +1,6 @@
+command /balance:
+	aliases: bal
+	executable by: players
+	trigger:
+		set {_money} to formatNumber({money::%sender's uuid%})
+		send "Your balance: %{_money}%" to sender

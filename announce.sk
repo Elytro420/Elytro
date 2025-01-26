@@ -1,0 +1,8 @@
+command /announce [<text>]:
+	permission: staff.announce
+	trigger:
+		if arg is not set:
+			send "&cPlease send a message"
+		else:
+			broadcast "<##ba49e9>&lᴇʟʏᴛʀᴏ &8▪ &f%arg%"
+			play sound "block.note_block.pling" at volume 10 at pitch 2 to all players

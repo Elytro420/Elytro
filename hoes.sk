@@ -1,0 +1,316 @@
+options:
+	wheat: 10
+	carrot: 20
+	potato: 20
+
+function bonemeal(p: player, r: number):
+	loop all blocks in radius {_r} around {_p}:
+		if loop-block is wheat, carrot, potatoes, melon stem or pumpkin stem:
+			apply 1 bone meal to loop-block
+
+on right click:
+	if player's held item is iron hoe:
+		if int tag "dur" of custom nbt of player's tool is set:
+			set {_dur} to int tag "dur" of custom nbt of player's tool
+			if {_dur} > 0:
+				remove 1 from {_dur}
+				set int tag "dur" of custom nbt of player's tool to {_dur}
+				bonemeal(player, 30)
+				set the name of player's held item to "&fBonemeal Hoe &8| &7Uses: <##33C17C>%{_dur}%"
+			else:
+				send "&cYour Bonemeal Hoe has no uses left!" to player
+
+command /givehoe [<offline player>] [<text>]:
+	permission: op
+	trigger:
+		if arg-1 is set:
+			if arg-2 is "bonemeal":
+				set {_i} to iron hoe named "&fBonemeal Hoe &8| &7Uses: <##33C17C>100" with lore """&7Applies the bonemeal effect to every crop within a 3 block radius", "" and "&bI'm sure farmers wished they had this"
+				set int tag "dur" of custom nbt of {_i} to 100
+				set {_p} to arg-1
+				give {_i} to {_p}
+			else if arg-2 is "harvest":
+				set {_i} to unbreakable iron hoe named "&6Harvester Hoe" with lore "&7Shift right-click to open upgrade menu" and ""
+				set int tag "fortune" of custom nbt of {_i} to 0
+				set int tag "explode" of custom nbt of {_i} to 0
+				set int tag "sfinder" of custom nbt of {_i} to 0
+				set int tag "key" of custom nbt of {_i} to 0
+				set int tag "replenish" of custom nbt of {_i} to 0
+				set string tag "tool" of custom nbt of {_i} to "harvesterHoe"
+				set {_fortune} to int tag "fortune" of custom nbt of {_i}
+				set {_explosion} to int tag "explode" of custom nbt of {_i}
+				set {_sfinder} to int tag "sfinder" of custom nbt of {_i}
+				set {_key} to int tag "key" of custom nbt of {_i}
+				set {_replenish} to int tag "replenish" of custom nbt of {_i}
+				set 2nd line of {_i}'s lore to "&eFortune Level: %{_fortune}%"
+				set 3rd line of {_i}'s lore to "&eExplosion Level: %{_explosion}%"
+				set 4th line of {_i}'s lore to "&eSoul Finder Level: %{_sfinder}%"
+				set 5th line of {_i}'s lore to "&eKey Finder Level: %{_key}%"
+				set 6th line of {_i}'s lore to "&eReplenish Level: %{_replenish}%"
+				set {_p} to arg-1
+				give {_i} to {_p}
+				
+on tab complete of "/givehoe":
+	set tab completions for position 2 to "bonemeal" and "harvest"
+
+on right click:
+	player is sneaking
+	if player's tool is set:
+		if name of player's tool contains "&6Harvester Hoe":
+			if string tag "tool" of custom nbt of player's tool is "harvesterHoe":
+				hoegui(player)
+			else:
+				send "&cThe NBT of this item is not set. Please make a ticket or ping a dev/owner" to player
+			
+function hoegui(p: player):
+	create a gui with virtual chest inventory with 5 rows named "           &6&nHarvester Hoe":
+		make gui slot (integers between 0 and 9*5) with gray stained glass pane named "&7"
+
+		set {_explosion} to int tag "explode" of custom nbt of {_p}'s tool
+		if {_explosion} is not set:
+			set {_explosion} to 0
+		if {_explosion} = 0:
+			set {_cost} to 325 * 23
+		else:
+			set {_cost} to 325 * {_explosion} * 23
+		if {_explosion} >= 3:
+			format gui slot 11 with barrier named "&cMax Explosion Level Reached" with lore "&7Your tool is at the max level of explosion!" and "&7&n%{_explosion}*3%%% chance to drop a tnt that explodes all crops in a %{_explosion}+1% block radius":
+				play sound "block.note_block.flute" at volume 1 at pitch 2 to {_p}
+		else:
+			make gui slot 11 with tnt named "&cExplode 💥" with lore "&7Current Level: %{_explosion}%/3", "&7Upgrade Cost: &6%{_cost}% Souls", "", "&eClick to upgrade!" and "&7&n%{_explosion}*3%%% chance to drop a tnt that explodes all crops in a %{_explosion}+1% block radius":
+				if {souls::%{_p}'s uuid%} >= {_cost}:
+					add 1 to {_explosion}
+					set int tag "explode" of custom nbt of {_p}'s tool to {_explosion}
+					set 3rd line of {_p}'s tool's lore to "&eExplosion Level: %{_explosion}%"
+					remove {_cost} from {souls::%{_p}'s uuid%}
+					play sound "block.note_block.pling" at volume 1 at pitch 2 to {_p}
+					hoegui({_p})
+				else:
+					play sound "block.note_block.flute" at volume 1 at pitch 2 to {_p}
+					format gui slot 11 with barrier named "&cNot enough souls to upgrade" with lore "&7Get more souls!"
+
+		set {_fortune} to int tag "fortune" of custom nbt of {_p}'s tool
+		if {_fortune} is not set:
+			set {_fortune} to 0
+		if {_fortune} = 0:
+			set {_cost} to 250 * 23
+		else:
+			set {_cost} to 250 * {_fortune} * 23
+		if {_fortune} >= 10:
+			format gui slot 10 with barrier named "&cMax Fortune Level Reached" with lore "&7Your tool is at the max level of fortune!" and "&7&nMultiply crop value by fortune level.":
+				play sound "block.note_block.flute" at volume 1 at pitch 2 to {_p}
+		else:
+			make gui slot 10 with emerald named "&2Fortune 💎" with lore "&7Current Level: %{_fortune}%/10", "&7Upgrade Cost: &6%{_cost}% Souls", "", "&eClick to upgrade!" and "&7&nMultiply crop value by fortune level.":
+				if {souls::%{_p}'s uuid%} >= {_cost}:
+					add 1 to {_fortune}
+					set int tag "fortune" of custom nbt of {_p}'s tool to {_fortune}
+					set 2nd line of {_p}'s tool's lore to "&eFortune Level: %{_fortune}%"
+					remove {_cost} from {souls::%{_p}'s uuid%}
+					play sound "block.note_block.pling" at volume 1 at pitch 2 to {_p}
+					hoegui({_p})
+				else:
+					play sound "block.note_block.flute" at volume 1 at pitch 2 to {_p}
+					format gui slot 10 with barrier named "&cNot enough souls to upgrade" with lore "&7Get more souls!"
+		set {_sfinder} to int tag "sfinder" of custom nbt of {_p}'s tool
+		if {_sfinder} is not set:
+			set {_sfinder} to 0
+		if {_sfinder} = 0:
+			set {_cost} to 325 * 25
+		else:
+			set {_cost} to 325 * {_sfinder} * 25
+		if {_sfinder} >= 5:
+			format gui slot 12 with barrier named "&cMax Soul Finder Level Reached" with lore "&7Your tool is at the max level of Soul Finder!" and "&7&n2.5%% chance to give you %{_sfinder}*5% Souls":
+				play sound "block.note_block.flute" at volume 1 at pitch 2 to {_p}
+		else:
+			make gui slot 12 with soul lantern named "&cSoul Finder ☠" with lore "&7Current Level: %{_sfinder}%/5", "&7Upgrade Cost: &6%{_cost}% Souls", "", "&eClick to upgrade!" and "&7&n2.5%% chance to give you %{_sfinder}*5% Souls":
+				if {souls::%{_p}'s uuid%} >= {_cost}:
+					add 1 to {_sfinder}
+					set int tag "sfinder" of custom nbt of {_p}'s tool to {_sfinder}
+					set 4th line of {_p}'s tool's lore to "&eSoul Finder Level: %{_sfinder}%"
+					remove {_cost} from {souls::%{_p}'s uuid%}
+					play sound "block.note_block.pling" at volume 1 at pitch 2 to {_p}
+					hoegui({_p})
+				else:
+					play sound "block.note_block.flute" at volume 1 at pitch 2 to {_p}
+					format gui slot 12 with barrier named "&cNot enough souls to upgrade" with lore "&7Get more souls!"
+		set {_key} to int tag "key" of custom nbt of {_p}'s tool
+		if {_key} is not set:
+			set {_key} to 0
+		if {_key} = 0:
+			set {_cost} to 325 * 25
+		else:
+			set {_cost} to 325 * {_key} * 27
+		if {_key} >= 5:
+			format gui slot 19 with barrier named "&cMax Key Finder Level Reached" with lore "&7Your tool is at the max level of Key Finder!" and "&7&n%{_key}*2%%% chance to get a <#3558B8>&lʀᴀʀᴇ ᴋᴇʏ":
+				play sound "block.note_block.flute" at volume 1 at pitch 2 to {_p}
+		else:
+			make gui slot 19 with tripwire hook named "&cKey Finder 🔑" with lore "&7Current Level: %{_key}%/5", "&7Upgrade Cost: &6%{_cost}% Souls", "", "&eClick to upgrade!" and "&7&n%{_key}*1%%% chance to get a <#3558B8>&lʀᴀʀᴇ ᴋᴇʏ":
+				if {souls::%{_p}'s uuid%} >= {_cost}:
+					add 1 to {_key}
+					set int tag "key" of custom nbt of {_p}'s tool to {_key}
+					set 5th line of {_p}'s tool's lore to "&eKey Finder Level: %{_key}%"
+					remove {_cost} from {souls::%{_p}'s uuid%}
+					play sound "block.note_block.pling" at volume 1 at pitch 2 to {_p}
+					hoegui({_p})
+				else:
+					play sound "block.note_block.flute" at volume 1 at pitch 2 to {_p}
+					format gui slot 19 with barrier named "&cNot enough souls to upgrade" with lore "&7Get more souls!"
+		set {_replenish} to int tag "replenish" of custom nbt of {_p}'s tool
+		if {_replenish} is not set:
+			set {_replenish} to 0
+		if {_replenish} = 0:
+			set {_cost} to 50000
+		else:
+			set {_cost} to 50000
+		if {_replenish} >= 1:
+			format gui slot 20 with barrier named "&cMax Replenish Level Reached" with lore "&7Your tool is at the max level of Replenish!" and "&7&nAuto replants when you break a fully grown crop":
+				play sound "block.note_block.flute" at volume 1 at pitch 2 to {_p}
+		else:
+			make gui slot 20 with diamond hoe named "&cReplenish 🌳" with lore "&7Current Level: %{_replenish}%/1", "&7Upgrade Cost: &6%{_cost}% Souls", "", "&eClick to upgrade!" and "&7&nAuto replants when you break a fully grown crop":
+				if {souls::%{_p}'s uuid%} >= {_cost}:
+					add 1 to {_replenish}
+					set int tag "replenish" of custom nbt of {_p}'s tool to {_replenish}
+					set 6th line of {_p}'s tool's lore to "&eReplenish Level: %{_replenish}%"
+					remove {_cost} from {souls::%{_p}'s uuid%}
+					play sound "block.note_block.pling" at volume 1 at pitch 2 to {_p}
+					hoegui({_p})
+				else:
+					play sound "block.note_block.flute" at volume 1 at pitch 2 to {_p}
+					format gui slot 20 with barrier named "&cNot enough souls to upgrade" with lore "&7Get more souls!"
+
+	open last gui to {_p}
+	
+on break:
+	if name of player's tool contains "&6Harvester Hoe":
+		if string tag "tool" of custom nbt of player's tool is "harvesterHoe":
+			if event-block = wheat[age=7], carrots[age=7], or potatoes[age=7]:
+				cancel drops
+				clear drops
+
+				set {_fortune} to int tag "fortune" of custom nbt of player's tool
+				set {_replenish} to int tag "replenish" of custom nbt of player's tool
+				set {_key} to int tag "key" of custom nbt of player's tool
+				set {_sfinder} to int tag "sfinder" of custom nbt of player's tool
+				set {_explode} to int tag "explode" of custom nbt of player's tool
+
+				chance of {_explode} * 3%:
+					# Calculate the explosion radius based on the level of the explode enchant
+					if {_explode} = 1:
+						set {_radius} to 2
+					else if {_explode} = 2:
+						set {_radius} to 3
+					else if {_explode} >= 3:
+						set {_radius} to 4
+
+					loop blocks in radius {_radius} around event-block:
+						if loop-block = wheat[age=7], carrots[age=7], or potatoes[age=7]:
+							cancel drops
+							clear drops
+							if loop-block = wheat[age=7]:
+								if {_fortune} <= 0:
+									add {@wheat} to player's balance
+								else:
+									add {@wheat} * {_fortune} to player's balance
+								give player 1 wheat seeds
+								if {_replenish} = 1:
+									set event-block to wheat[age=0]
+									set loop-block to wheat[age=0]
+								else:
+									set loop-block to air
+								if {_key} > 0:
+									chance of {_key} * 0.5%:
+										give player tripwire hook named "<#3558B8>&lʀᴀʀᴇ ᴋᴇʏ"
+								if {_sfinder} > 0:
+									chance of 2.5%:
+										add {_sfinder} * 5 to {souls::%player's uuid%}
+							else if loop-block = carrots[age=7]:
+								if {_fortune} <= 0:
+									add {@carrot} to player's balance
+								else:
+									add {@carrot} * {_fortune} to player's balance
+								give player 1 carrot
+								if {_replenish} = 1:
+									set loop-block to carrots[age=0]
+								else:
+									set loop-block to air
+								if {_key} > 0:
+									chance of {_key} * 0.5%:
+										give player tripwire hook named "<#3558B8>&lʀᴀʀᴇ ᴋᴇʏ"
+								if {_sfinder} > 0:
+									chance of 2.5%:
+										add {_sfinder} * 5 to {souls::%player's uuid%}
+							else if loop-block = potatoes[age=7]:
+								if {_fortune} <= 0:
+									add {@potato} to player's balance
+								else:
+									add {@potato} * {_fortune} to player's balance
+								give player 1 potato
+								if {_replenish} = 1:
+									set loop-block to potatoes[age=0]
+								else:
+									set loop-block to air
+								if {_key} > 0:
+									chance of {_key} * 0.5%:
+										give player tripwire hook named "<#3558B8>&lʀᴀʀᴇ ᴋᴇʏ"
+								if {_sfinder} > 0:
+									chance of 2.5%:
+										add {_sfinder} * 5 to {souls::%player's uuid%}
+					stop
+
+				if event-block = wheat[age=7]:
+					if {_fortune} <= 0:
+						add {@wheat} to player's balance
+					else:
+						add {@wheat} * {_fortune} to player's balance
+					give player 1 wheat seeds
+					if {_replenish} = 1:
+						set event-block to wheat[age=0]
+					else:
+						set event-block to air
+					if {_key} > 0:
+						chance of {_key} * 1%:
+							give player tripwire hook named "<#3558B8>&lʀᴀʀᴇ ᴋᴇʏ"
+					if {_sfinder} > 0:
+						chance of 2.5%:
+							add {_sfinder} * 5 to {souls::%player's uuid%}
+				else if event-block = carrots[age=7]:
+					if {_fortune} <= 0:
+						add {@carrot} to player's balance
+					else:
+						add {@carrot} * {_fortune} to player's balance
+					give player 1 carrot
+					if {_replenish} = 1:
+						set event-block to carrots[age=0]
+					else:
+						set event-block to air
+					if {_key} > 0:
+						chance of {_key} * 1%:
+							give player tripwire hook named "<#3558B8>&lʀᴀʀᴇ ᴋᴇʏ"
+					if {_sfinder} > 0:
+						chance of 2.5%:
+							add {_sfinder} * 5 to {souls::%player's uuid%}
+				else if event-block = potatoes[age=7]:
+					if {_fortune} <= 0:
+						add {@potato} to player's balance
+					else:
+						add {@potato} * {_fortune} to player's balance
+					give player 1 potato
+					if {_replenish} = 1:
+						set event-block to potatoes[age=0]
+					else:
+						set event-block to air
+					if {_key} > 0:
+						chance of {_key} * 1%:
+							give player tripwire hook named "<#3558B8>&lʀᴀʀᴇ ᴋᴇʏ"
+					if {_sfinder} > 0:
+						chance of 2.5%:
+							add {_sfinder} * 5 to {souls::%player's uuid%}
+			else:
+				cancel event
+
+
+				
+on drop:
+	if event-item is carrot, wheat or potato:
+		cancel event
+				

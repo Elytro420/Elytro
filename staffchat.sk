@@ -1,0 +1,41 @@
+options:
+	prefix: <##A52323>&lSTAFF &7>>
+
+on load:
+	loop all players:
+		if loop-player has permission "staff.chat":
+			if {staff.c::%loop-player's uuid%} is true:
+				set {staff.c::%loop-player's uuid%} to false
+				send "{@prefix} &fStaff chat &cDisabled." to loop-player
+			else if {staff.c::%loop-player's uuid%} is not set:
+				set {staff.c::%loop-player's uuid%} to false
+				send "{@prefix} &fStaff chat &cDisabled." to loop-player
+
+
+on join:
+	if player has permission "staff.chat":
+		set {staff.c::%player's uuid%} to false
+		send "{@prefix} &fStaff chat &cDisabled." to player
+
+command /sc [<text>]:
+	permission: staff.chat
+	aliases: staffc, staffchat, staffchat
+	trigger:
+		if arg is not set:
+			if {staff.c::%player's uuid%} is false:
+				set {staff.c::%player's uuid%} to true
+				send "{@prefix} &fStaff chat &aEnabled." to player
+			else if {staff.c::%player's uuid%} is true:
+				set {staff.c::%player's uuid%} to false
+				send "{@prefix} &fStaff chat &cDisabled." to player
+		else if arg is set:
+			loop all players:
+				if loop-player has permission "staff.chat":
+					send "{@prefix} <##E5BCBC>%player%&7: &f%arg 1%" to loop-player
+					
+on chat:
+	if {staff.c::%player's uuid%} is true:
+		cancel event
+		loop all players:
+			loop-player has permission "staff.chat":
+				send "{@prefix} <##E5BCBC>%player%&7: &f%message%" to loop-player

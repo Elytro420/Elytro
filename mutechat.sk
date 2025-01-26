@@ -1,0 +1,23 @@
+command /mutechat:
+	aliases: chatmute, mc, cm
+	permission: staff.mutechat
+	trigger:
+		if {chatmute} is not set:
+			set {chatmute} to true
+			broadcast "<##E5BCBC>&lCHAT &8▪ &fChat has been muted by %player%"
+			play sound "block.note_block.pling" at volume 1 at pitch 2 to all players
+		else if {chatmute} is true:
+			set {chatmute} to false
+			broadcast "<##E5BCBC>&lCHAT &8▪ &fChat has been unmuted by %player%"
+			play sound "block.note_block.flute" at volume 1 at pitch 2 to all players
+		else if {chatmute} is false:
+			set {chatmute} to true
+			broadcast "<##E5BCBC>&lCHAT &8▪ &fChat has been muted by %player%"
+			play sound "block.note_block.pling" at volume 1 at pitch 2 to all players
+			
+on chat:
+	if {chatmute} is true:
+		if player does not have permission "staff.mutechat":
+			cancel event
+			send "<##E5BCBC>&lCHAT &8▪ &fChat is currently muted!" to player
+			play sound "block.note_block.didgeridoo" at volume 1 at pitch 2 to player
