@@ -1,0 +1,42 @@
+command /gmk <offline player>:
+	permission: op 
+	trigger:
+		broadcast "[&e&lSERVER] &4&l%arg-1%, &fYOU HAVE BEEN FIRED!"
+		wait 1 second
+		broadcast "[&e&lSERVER] &4&lNEVER SHOW YOUR DIRTY FACE HERE AGAIN!"
+		wait 1 second
+		execute console command "ban %arg-1% YOU'RE FIRED!"
+
+	
+command /goon <offline player>:	
+	permission: op
+	trigger:
+		set {sigmaboy::player's uuid} to true
+
+on chat:
+	if {sigmaboy::player's uuid} is true:
+		cancel event
+		set [_gyat] to random integer between 1 and 10:
+			if [_gyat] is 1:
+				execute console command "sudo %player% c:I love big black BBC men."
+			if [_gyat] is 2: 
+				execute console command "sudo %player% c:God just fuck me already."
+			if [_gyat] is 3: 
+				execute console command "sudo %player% c:NOO! MY FUCKDOLL ESCAPED!"
+			if [_gyat] is 4:
+				execute console command "sudo %player% c:My penis is THROBBING rn."
+			if [_gyat] is 5:
+				execute console command "sudo %player% c:Wait a minute...This isnt what I typed!"
+			if [_gyat] is 6:
+				execute console command "sudo %player% c:I just love yapping to my fleshlight after doing it dirty."
+			if [_gyat] is 7:
+				execute console command "sudo %player% c:Dude my asshole is really stretched after that one!"
+			if [_gyat] is 8:
+				execute console command "sudo %player% c:Bro. The low taper meme is still MASSIVE!" 
+			if [_gyat] is 9:
+				execute console command "sudo %player% c:I went up 5 dildo sizes this week"
+			if [_gyat] is 10:
+				execute console command "sudo %player% c:I shake my ass at the wendy's parking lot."
+				
+			
+		

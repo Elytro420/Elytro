@@ -1,0 +1,2 @@
+on death:
+	execute console command "/kill error5o1"

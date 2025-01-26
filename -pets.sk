@@ -1,0 +1,90 @@
+on load:
+	create section with {_p} stored in {-loadYml}:
+		load yml "plugins/Skript/NoelYML/pets/%uuid of {_p}%.yml" as "pets-%{_p}%"
+		set {-pets::%{_p}%::*} to yml list "Pets" from "pets-%{_p}%"
+		set {-equippedPet::%{_p}%} to yml value "equipPet" from "pets-%{_p}%"
+	create section with {_p} and {_u} stored in {-saveYml}:
+		set yml list "Pets" from "pets-%{_p}%" to {-pets::%{_p}%::*}
+		set yml value "equipPet" from "pets-%{_p}%" to {-equippedPet::%{_p}%}
+		save yml "pets-%{_p}%"
+		if {_u} is true:
+			delete {-pets::%{_p}%::*}
+			delete {-equippedPet::%{_p}%}
+			unload yml "pets-%{_p}%"
+
+on join:
+	run section {-loadYml} async with player
+	
+on quit:
+	run section {-saveYml} sync with player and true
+
+command /pets:
+	trigger:
+		set {-pets::%player%} to a hopper inventory named "&6Pets"
+		
+		set slot (0,1,2,3,4) of {-pets::%player%} to gray stained glass pane
+		set slot 1 of {-pets::%player%} to player head named "pet"
+		set slot 3 of {-pets::%player%} to chest named "pet inv"
+		
+		open {-pets::%player%} to player
+		
+command /registerPets <string> <string>:
+	permission: op
+	trigger:
+		registerPet(arg-1, arg-2, player's tool)
+		give player getPet(arg-2)
+		send "&aRegistered"
+
+function petInv(p: player):
+	set {-petInv::%{_p}%} to a chest inventory with 4 rows named "&6Pet Inventory"
+	
+	set {_border::*} to (numbers between 0 and 9),17,18,(numbers between 26 and 35)
+	loop {_border::*}:
+		set slot loop-value of {-petInv::%{_p}%} to gray stained glass pane
+	set {_i} to 9
+	loop {-pets::%{_p}%::*}:
+		add 1 to {_i}
+		{-pets::%{_p}%} is not set:
+			stop the loop
+		loop 2 times:
+			{_border::*} contains {_i}:
+				add 1 to {_i}
+		{_i} < 5
+		set slot {_i} of {-petInv::%{_p}%} to getPet(loop-value)
+	
+	open {-petInv::%{_p}%} to {_p}
+	
+function registerPet(name: string, id: string, item: item):
+	set {pets::%{_id}%::name} to {_name}
+	set string tag "id" of custom nbt of {_item} to {_id}
+	set boolean tag "pet" of custom nbt of {_item} to true
+	set {pets::%{_id}%::item} to {_item}
+	
+function getPet(id: string) :: item:
+	set {_i} to {pets::%{_id}%::item}
+	set name of {_i} to colored {pets::%{_id}%::name}
+	return {_i}
+	
+function equipPet(p: player, id: string):
+	set {-equippedPet::%{_p}%} to {_id}
+	
+on right click:
+	if boolean tag "pet" of custom nbt of player's tool is set:
+		if string tag "id" of custom nbt of player's tool is set:
+			if {-pets::%player%::*} contains string tag "id" of custom nbt of player's tool:
+				send "&cError, already claimed." to player
+			else:
+				add string tag "id" of custom nbt of player's tool to {-pets::%player%::*}
+				remove 1 of player's tool from player's inventory
+	
+on inventory click:
+	if player's current inventory is {-pets::%player%}:
+		cancel event
+		
+		if event-inventory is not {-pets::%player%}:
+			stop
+		
+		if string tag "id" of custom nbt of event-slot is set:
+			if {-equippedPet::%player%} is not string tag "id" of custom nbt of event-slot:
+				equipPet(player, string tag "id" of custom nbt of event-slot)
+				send "&aEquipped Pet" to player

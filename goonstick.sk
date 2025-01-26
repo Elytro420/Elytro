@@ -1,0 +1,3 @@
+on join:
+	loop all players
+	say "[&2+] &f%player%" to loop-player

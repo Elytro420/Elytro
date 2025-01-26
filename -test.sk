@@ -1,0 +1,19 @@
+on load:
+	clear {pluginview::*}
+	add "TarryCobra" to {pluginview::*}
+	add "Tqsk" to {pluginview::*}
+	add "Noel99990" to {pluginview::*}
+	
+on command "/pl":
+	if {pluginview::*} does not contain player:
+		cancel event
+		send "&fServer Plugins (1):"
+		send "<##ea7f06>Bukkit Plugins:"
+		send "&8- &aElytroCore"
+	
+on command "/plugins":
+	if {pluginview::*} does not contain player:
+		cancel event
+		send "&fServer Plugins (1):"
+		send "<##ea7f06>Bukkit Plugins:"
+		send "&8- &aElytroCore"

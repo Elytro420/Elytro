@@ -1,0 +1,164 @@
+on first join: 
+	set {totalhypeadded::player's::uuid} to 0 
+
+
+command /hype:
+	cooldown: 1 hour
+	cooldown message: &cYou can only hype once per hour!
+	trigger: 
+		add 10 to {hype}
+		add 10 to {totalhypeadded::player's::uuid}
+		send "&5&l[SERVER]: &3&l10 HYPE &fsent! check current progress <run command:/hypestatus>&f&lHERE.<reset>" to player
+		set {hypeadded::player's uuid} to true 
+		wait 1 hour 
+		set {hypeadded::player's uuid} to false
+command /hypestatus:
+	trigger:
+		if {hype} is less than or equal to {hypeneeded}:
+			set metadata tag "hypeUI" of player to chest inventory with 5 rows named "&3&lHYPE STATUS"
+			set slot all integers between 0 and 50 of metadata tag "hypeUI" of player to gray stained glass pane named "&5&k90210"
+			set slot 28 of metadata tag "hypeUI" of player to green dye named "&2&lADD HYPE" with lore "&fYou can only add hype once every hour." 
+			set slot 13 of metadata tag "hypeUI" of player to diamond named "&3&lHYPE DIAMOND" with lore "&fHype shows how much our players are hyped for our next big project:" and "&f&lThere is currently &3&l%{hype}%&f&l/&3&l%{hypeneeded}% Hype!"
+			set slot 31 of metadata tag "hypeUI" of player to red dye named "&4&lCURRENTLY HYPING:" with lore "&f&l%{hypegoal}%"
+			set slot 34 of metadata tag "hypeUI" of player to white dye named "&1&lWHEN HYPE METER IS FILLED:" with lore "&fUsually, when the hype meter is filled, the awaited project is released." 
+		if {hype} is more than or equal to {hypeneeded}: 
+			set slot 28 of metadata tag "hypeUI" of player to firework named "&2&lADD HYPE" with lore "&2&lGOAL REACHED!"
+			set slot 13 of metadata tag "hypeUI" of player to diamond named "&3&lHYPE DIAMOND" with lore "&fHype shows how much our players are hyped for our next big project:" and "&f&lThere is currently &3&l%{hype}%&f&l/%{hypeneeded}% Hype!"
+			set slot 31 of metadata tag "hypeUI" of player to firework named "&4&lCURRENTLY HYPING:" with lore "&2&lGOAL REACHED!" 
+			set slot 34 of metadata tag "hypeUI" of player to firework named "&1&lWHEN HYPE METER IS FILLED:" with lore "&fUsually, when the hype meter is filled, the awaited project is released." and "&2&lGOAL REACHED!" 
+	
+		open metadata tag "hypeUI" of player to player
+			
+on inventory click: 
+	if name of event-inventory is "&3&lHYPE STATUS":
+		cancel event	
+	if name of event-slot is "&2&lADD HYPE":
+		if {hypeadded::player's uuid} is true:
+			cancel event 
+			close player's inventory 
+			send "&cYou can only hype once per hour!" 
+		else if {hypeadded::player's uuid} is false: 
+			add 10 to {hype} 
+			send "&5&l[<##5C17AE>&lHYPE]: &3&lHYPE &fsent! check current progress <run command:/hypestatus>&f&lHERE.<reset>" to player
+			set {hypeadded::player's uuid} to true
+			wait 1 hour
+			set {hypeadded::player's uuid} to false
+
+command /hypegoal <text>:
+	permission: op 
+	trigger:
+		set {hypegoal} to arg-1
+		send "&5&l[<##5C17AE>&lHYPE] Done" to player 
+		
+on tab complete of "/hypegoal": # @skignore
+	set tab completions for position 1 to "text"
+
+command /hypeneeded <integer>:
+	permission: op 
+	trigger: 
+		set {hypeneeded} to arg-1
+		send "&5&l[<##5C17AE>&lHYPE] &f&lDone" to player
+			
+command /hypeset <integer>:
+	permission: op 
+	trigger:
+		set {hype} to arg-1
+		send "&5&l[<##5C17AE>&lHYPE] &f&lDone" to player
+								
+								
+
+on right click:
+	if name of player's held item contains "&3&LHYPE DIAMOND":
+		if {hypediamondcooldown} is not set:
+			set {hypediamondcooldown} to now
+		else if difference between now and {hypediamondcooldown} is greater than 30 minutes:
+			create a gui with virtual chest inventory with 5 rows named "&3&lUSE HYPE DIAMOND?":
+				make gui slot (integers between 0 and 45) with gray stained glass pane named "&3&k90210"
+				make gui slot (integers between 12 and 14) with cyan stained glass pane named "&1&k90210"
+				make gui slot 27 with cyan stained glass pane named "&1&k90210"
+				make gui slot (integers between 30 and 32) with cyan stained glass pane named "&1&k90210"
+				make gui slot 23 with cyan stained glass pane named "&1&k90210"
+				make gui slot 22 with diamond named "&3&lUSE HYPE DIAMOND?" with lore "&fThis will add 50 to the hype count!" and "&cONLY ONE HYPE DIAMOND CAN BE USED EVERY 30 MINUTES GLOBALLY!"
+			open last gui to player
+		if difference between now and {hypediamondcooldown} is less than 30 minutes:
+			create a gui with virtual chest inventory with 5 rows named "&c&lCOOLDOWN!": 
+				make gui slot (integers between 0 and 45) with gray stained glass pane named "&4&k90210"
+				make gui slot 22 with barrier named "&c&lHYPE DIAMOND IS ON COOLDOWN!" with lore "&fOnly one hype diamond can be used every 30 minutes globally!" and "&cLast hype diamond used was %difference between now and {hypediamondcooldown}% ago!"
+			open last gui to player
+
+			
+on inventory click:
+	if name of event-inventory is "&3&lUSE HYPE DIAMOND?":
+		cancel event
+	if name of event-slot is "&3&lUSE HYPE DIAMOND?":
+		add 50 to {totalhypeadded::player's::uuid}
+		add 50 to {hype}
+		set {hypediamondcooldown} to now 
+		remove 1 diamond named "&3&lHYPE DIAMOND" from player's inventory
+		broadcast "&7[<##5C17AE>&lHYPE&7] &c&l%player% &fhas just used a <##5C17AE>&lHYPE DIAMOND &fadding &c&l50 &fto the current <run command:/hypestatus>&lHYPE. We now have &c%{hype}%/%{hypeneeded}% &f&lHYPE"
+		close player's inventory
+		loop all players:
+			play sound "entity.ender_dragon.death" to loop-player
+												
+	else if name of event-inventory is "&c&lCOOLDOWN!":
+		cancel event 
+
+on right click:
+	if name of player's held item is "&e&lHYPE BELL":
+		if player is sneaking:
+			cancel event
+		else if player is not sneaking:
+			cancel event
+			add 5 to {totalhypeadded::player's::uuid}
+			add 5 to {hype}
+			play sound "block.bell.use" to player
+			send "&7[<##5C17AE>&lHYPE&7] &e&lHYPE BELL &f&lredeemed, adding 5 to the current HYPE count! &f&lCheck hype <run command:/hypestatus>&3&lHERE." to player 
+			remove 1 bell named "&e&lHYPE BELL" from player's inventory 
+
+
+command /giveall <text> [<offline player>] <integer>:
+				permission: op
+				trigger:
+								if arg-1 is "all":
+												give all players arg-3 of player's held item
+								if arg-1 is "self":
+												give player arg-3 of player's held item
+								if arg-1 is "player":
+												add arg-3 of player's held item to arg-2's inventory
+												
+on tab complete of "/giveall": 
+		set tab completions for position 1 to "all", "self" and "player"
+		set tab completions for position 3 to "integer"
+
+		
+on right click:
+	if name of player's held item is "Block of Diamond":
+		cancel event
+
+
+on right click:
+	if name of player's held item is "&e&lHYPE BELL":
+		if player is sneaking:
+			set {hypebells::player's uuid} to the amount of bells named "&e&lHYPE BELL" in player's inventory 
+			add {hypebells::player's uuid} to {hype::bells::%player's uuid%}
+			remove all bells named "&e&lHYPE BELL" from player
+			add 5*{hypebells::player's uuid} to {hype}
+			add 5*{hypebells::player's uuid} to {totalhypeadded::player's::uuid}
+			send "&7[<##5C17AE>&lHYPE&7] &c&l%{hypebells::player's uuid}% &f&lbells redeemed, adding &c&l%5*{hypebells::player's uuid}% &f&lHYPE." to player
+			set {hypebells::player's uuid} to 0
+			
+on right click:
+	if name of player's held item is "&f&lHYPE VOUCHER":
+		remove 1 paper named "&f&lHYPE VOUCHER" from player's inventory
+		add 10 to {totalhypeadded::player's::uuid}
+		add 10 to {hype}
+		send "&7[<##5C17AE>&lHYPE&7] &f&lHYPE VOUCHER redeemed, adding 10 to the hype count! &f&lCheck hype <run command:/hypestatus>&3&lHERE." to player 
+command /diamond:
+	permission: op
+	trigger: 
+		give player 1 of shiny diamond named "&3&LHYPE DIAMOND"
+
+command /diarestart:
+	permission: op
+	trigger: 
+		set {hypediamondcooldown} to 0 

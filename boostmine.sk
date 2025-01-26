@@ -1,0 +1,9 @@
+command /setBoostBlock:
+	permission: op
+	trigger:
+		if targeted block is not air:
+			set string tag "boost" of custom nbt of targeted block to "e"
+
+on walking on black wool:
+	if string tag "boost" of custom nbt of event-block is set:
+		push player upwards at speed 3

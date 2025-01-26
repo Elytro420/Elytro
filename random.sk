@@ -1,0 +1,5 @@
+command /reloadMining:
+	permission: op
+	trigger:
+		execute console command "/plugman reload NoahMining"
+		execute console command "/sk reload methods"

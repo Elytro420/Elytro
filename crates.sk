@@ -1,0 +1,239 @@
+command /crateset [<text>]:
+	permission: op
+	trigger:
+		if arg is "common":
+			set {commoncrate} to player's target block
+		else if arg is "uncommon":
+			set {uncommoncrate} to player's target block
+		else if arg is "rare":
+			set {rarecrate} to player's target block
+		else if arg is "epic":
+			set {epiccrate} to player's target block
+		else if arg is "legendary":
+			set {legendarycrate} to player's target block
+
+command /givekey [<text>] [<player>] [<number>]:
+	permission: op
+	trigger:
+		if arg-1 is "common":
+			if arg-2 is not set:
+				if arg-3 is set:
+					give player arg 3 light gray dye named "<#6B8AA9>&lᴄᴏᴍᴍᴏɴ ᴋᴇʏ"
+				else:
+					give player 1 light gray dye named "<#6B8AA9>&lᴄᴏᴍᴍᴏɴ ᴋᴇʏ"
+			else:
+				if arg-3 is set:
+					give arg 2 arg 3 of light gray dye named "<#6B8AA9>&lᴄᴏᴍᴍᴏɴ ᴋᴇʏ"
+				else:
+					give arg 2 1 light gray dye named "<#6B8AA9>&lᴄᴏᴍᴍᴏɴ ᴋᴇʏ"
+		else if arg-1 is "uncommon":
+			if arg-2 is not set:
+				if arg-3 is set:
+					give player arg 3 of lime dye named "<#35B859>&lᴜɴᴄᴏᴍᴍᴏɴ ᴋᴇʏ"
+				else:
+					give player 1 lime dye named "<#35B859>&lᴜɴᴄᴏᴍᴍᴏɴ ᴋᴇʏ"
+			else:
+				if arg-3 is set:
+					give arg 2 arg 3 of lime dye named "<#35B859>&lᴜɴᴄᴏᴍᴍᴏɴ ᴋᴇʏ"
+				else:
+					give arg 2 1 lime dye named "<#35B859>&lᴜɴᴄᴏᴍᴍᴏɴ ᴋᴇʏ"
+		else if arg-1 is "rare":
+			if arg-2 is not set:
+				if arg-3 is set:
+					give player arg 3 blue dye named "<#3558B8>&lʀᴀʀᴇ ᴋᴇʏ"
+				else:
+					give player 1 blue dye named "<#3558B8>&lʀᴀʀᴇ ᴋᴇʏ"
+			else:
+				if arg-3 is set:
+					give arg 2 arg 3 of blue dye named "<#3558B8>&lʀᴀʀᴇ ᴋᴇʏ"
+				else:
+					give arg 2 1 blue dye named "<#3558B8>&lʀᴀʀᴇ ᴋᴇʏ"
+		else if arg-1 is "epic":
+			if arg-2 is not set:
+				if arg-3 is set:
+					give player arg 3 magenta dye named "<#9135B8>&lᴇᴘɪᴄ ᴋᴇʏ"
+				else:
+					give player 1 magenta dye named "<#9135B8>&lᴇᴘɪᴄ ᴋᴇʏ"
+			else:
+				if arg-3 is set:
+					give arg 2 arg 3 of magenta dye named "<#9135B8>&lᴇᴘɪᴄ ᴋᴇʏ"
+				else:
+					give arg 2 1 magenta dye named "<#9135B8>&lᴇᴘɪᴄ ᴋᴇʏ"
+		else if arg-1 is "legendary":
+			if arg-2 is not set:
+				if arg-3 is set:
+					give player arg 3 orange dye named "<#9CB835>&lʟᴇɢᴇɴᴅᴀʀʏ ᴋᴇʏ"
+				else:
+					give player 1 orange dye named "<#9CB835>&lʟᴇɢᴇɴᴅᴀʀʏ ᴋᴇʏ"
+			else:
+				if arg-3 is set:
+					give arg 2 arg 3 of orange dye named "<#9CB835>&lʟᴇɢᴇɴᴅᴀʀʏ ᴋᴇʏ"
+				else:
+					give arg 2 1 orange dye named "<#9CB835>&lʟᴇɢᴇɴᴅᴀʀʏ ᴋᴇʏ"
+		else:
+			send "&cPlease specify a key" to player
+
+function commonrewards(p: player):
+	set {_roll} to a random integer between 1 and 100
+	if {_roll} <= 50:
+		add 500 to {_p}'s balance
+		send "&fYou have recieved &c500 Dollars &ffrom the <#6B8AA9>&lᴄᴏᴍᴍᴏɴ ᴄʀᴀᴛᴇ!" to {_p}
+	else if {_roll} <= 85:
+		add 100 to {souls::%{_p}'s uuid%}
+		send "&fYou have recieved &c100 Souls &ffrom the <#6B8AA9>&lᴄᴏᴍᴍᴏɴ ᴄʀᴀᴛᴇ!" to {_p}
+	else if {_roll} <= 95:
+		add 1000 to {_p}'s balance
+		send "&fYou have recieved &c1000 Dollars &ffrom the <#6B8AA9>&lᴄᴏᴍᴍᴏɴ ᴄʀᴀᴛᴇ!" to {_p}
+	else:
+		give {_p} a lime dye named "<#35B859>&lᴜɴᴄᴏᴍᴍᴏɴ ᴋᴇʏ"
+		send "&fYou have recieved <#35B859>&lᴜɴᴄᴏᴍᴍᴏɴ ᴋᴇʏ &ffrom the <#6B8AA9>&lᴄᴏᴍᴍᴏɴ ᴄʀᴀᴛᴇ!" to {_p}
+		
+function uncommonrewards(p: player):
+	set {_roll} to a random integer between 1 and 100
+	if {_roll} <= 50:
+		add 3000 to {_p}'s balance
+		send "&fYou have recieved &c3000 Dollars &ffrom the <#35B859>&lᴜɴᴄᴏᴍᴍᴏɴ ᴄʀᴀᴛᴇᴇ!" to {_p}
+	else if {_roll} <= 85:
+		add 350 to {souls::%{_p}'s uuid%}
+		send "&fYou have recieved &c350 Souls &ffrom the <#35B859>&lᴜɴᴄᴏᴍᴍᴏɴ ᴄʀᴀᴛᴇ!" to {_p}
+	else if {_roll} <= 95:
+		add 7500 to {_p}'s balance
+		send "&fYou have recieved &c7500 Dollars &ffrom the <#35B859>&lᴜɴᴄᴏᴍᴍᴏɴ ᴄʀᴀᴛᴇ!" to {_p}
+	else:
+		give {_p} a blue dye named "<#3558B8>&lʀᴀʀᴇ ᴋᴇʏ"
+		send "&fYou have recieved <#3558B8>&lʀᴀʀᴇ ᴋᴇʏ &ffrom the <#35B859>&lᴜɴᴄᴏᴍᴍᴏɴ ᴄʀᴀᴛᴇ!" to {_p}
+		
+function rarerewards(p: player):
+	set {_roll} to a random integer between 1 and 100
+	if {_roll} <= 50:
+		add 9000 to {_p}'s balance
+		send "&fYou have recieved &c9000 Dollars &ffrom the <#3558B8>&lʀᴀʀᴇ ᴄʀᴀᴛᴇ!" to {_p}
+	else if {_roll} <= 85:
+		add 500 to {souls::%{_p}'s uuid%}
+		send "&fYou have recieved &c500 Souls &ffrom the <#3558B8>&lʀᴀʀᴇ ᴄʀᴀᴛᴇ!" to {_p}
+	else if {_roll} <= 95:
+		add 12500 to {_p}'s balance
+		send "&fYou have recieved &c12500 Dollars &ffrom the <#3558B8>&lʀᴀʀᴇ ᴄʀᴀᴛᴇ!" to {_p}
+	else:
+		give {_p} a magenta dye named "<#9135B8>&lᴇᴘɪᴄ ᴋᴇʏ"
+		send "&fYou have recieved <#9135B8>&lᴇᴘɪᴄ ᴋᴇʏ &ffrom the <#3558B8>&lʀᴀʀᴇ ᴄʀᴀᴛᴇ!" to {_p}
+		
+function epicrewards(p: player):
+	set {_roll} to a random integer between 1 and 100
+	if {_roll} <= 50:
+		add 15000 to {_p}'s balance
+		send "&fYou have recieved &c15000 Dollars &ffrom the <#9135B8>&lᴇᴘɪᴄ ᴄʀᴀᴛᴇ!" to {_p}
+	else if {_roll} <= 85:
+		add 800 to {souls::%{_p}'s uuid%}
+		send "&fYou have recieved &c800 Souls &ffrom the <#9135B8>&lᴇᴘɪᴄ ᴄʀᴀᴛᴇ!" to {_p}
+	else if {_roll} <= 95:
+		add 20000 to {_p}'s balance
+		send "&fYou have recieved &c20000 Dollars &ffrom the <#9135B8>&lᴇᴘɪᴄ ᴄʀᴀᴛᴇ!" to {_p}
+	else:
+		give {_p} a orange dye named "<#9CB835>&lʟᴇɢᴇɴᴅᴀʀʏ ᴋᴇʏ"
+		send "&fYou have recieved <#9CB835>&lʟᴇɢᴇɴᴅᴀʀʏ ᴋᴇʏ &ffrom the <#9135B8>&lᴇᴘɪᴄ ᴄʀᴀᴛᴇ!" to {_p}
+		
+function legendaryrewards(p: player):
+	set {_roll} to a random integer between 1 and 100
+	if {_roll} <= 50:
+		add 25000 to {_p}'s balance
+		send "&fYou have recieved &c25000 Dollars &ffrom the <#9CB835>&lʟᴇɢᴇɴᴅᴀʀʏ ᴄʀᴀᴛᴇ!" to {_p}
+	else if {_roll} <= 85:
+		add 1000 to {souls::%{_p}'s uuid%}
+		send "&fYou have recieved &c1000 Souls &ffrom the <#9CB835>&lʟᴇɢᴇɴᴅᴀʀʏ ᴄʀᴀᴛᴇ!" to {_p}
+	else if {_roll} <= 95:
+		add 32000 to {_p}'s balance
+		send "&fYou have recieved &c32000 Dollars &ffrom the <#9CB835>&lʟᴇɢᴇɴᴅᴀʀʏ ᴄʀᴀᴛᴇ!" to {_p}
+	else:
+		give {_p} a orange dye named "<#9CB835>&lʟᴇɢᴇɴᴅᴀʀʏ ᴋᴇʏ"
+		send "&fYou have recieved <#9CB835>&lʟᴇɢᴇɴᴅᴀʀʏ ᴋᴇʏ &ffrom the <#9CB835>&lʟᴇɢᴇɴᴅᴀʀʏ ᴄʀᴀᴛᴇ!" to {_p}
+
+on right click:
+	if clicked block is {commoncrate}:
+		if name of player's tool contains "<#6B8AA9>&lᴄᴏᴍᴍᴏɴ ᴋᴇʏ":
+			cancel event
+			remove 1 of player's held item from player
+			commonrewards(player)
+		else if name of player's offhand tool contains "<#6B8AA9>&lᴄᴏᴍᴍᴏɴ ᴋᴇʏ":
+			cancel event
+			remove 1 of offhand item of player from player
+			commonrewards(player)
+	else if clicked block is {uncommoncrate}:
+		if name of player's tool contains "<#35B859>&lᴜɴᴄᴏᴍᴍᴏɴ ᴋᴇʏ":
+			cancel event
+			remove 1 of player's held item from player
+			uncommonrewards(player)
+		else if name of player's offhand tool contains "<#35B859>&lᴜɴᴄᴏᴍᴍᴏɴ ᴋᴇʏ":
+			cancel event
+			remove 1 of offhand item of player from player
+			uncommonrewards(player)
+	else if clicked block is {rarecrate}:
+		if name of player's tool contains "<#3558B8>&lʀᴀʀᴇ ᴋᴇʏ":
+			cancel event
+			remove 1 of player's held item from player
+			rarerewards(player)
+		else if name of player's offhand tool contains "<#3558B8>&lʀᴀʀᴇ ᴋᴇʏ":
+			cancel event
+			remove 1 of offhand item of player from player
+			rarerewards(player)
+	else if clicked block is {epiccrate}:
+		if name of player's tool contains "<#9135B8>&lᴇᴘɪᴄ ᴋᴇʏ":
+			cancel event
+			remove 1 of player's held item from player
+			epicrewards(player)
+		else if name of player's offhand tool contains "<#9135B8>&lᴇᴘɪᴄ ᴋᴇʏ":
+			cancel event
+			remove 1 of offhand item of player from player
+			epicrewards(player)
+	if clicked block is {legendarycrate}:
+		if name of player's tool contains "<#9CB835>&lʟᴇɢᴇɴᴅᴀʀʏ ᴋᴇʏ":
+			cancel event
+			remove 1 of player's held item from player
+			legendaryrewards(player)
+		else if name of player's offhand tool contains "<#9CB835>&lʟᴇɢᴇɴᴅᴀʀʏ ᴋᴇʏ":
+			cancel event
+			remove 1 of offhand item of player from player
+			legendaryrewards(player)
+			
+on left click:
+	if clicked block is {commoncrate}:
+		cancel event
+		create a gui with virtual chest inventory with 3 rows named "          <#6B8AA9>&lᴄᴏᴍᴍᴏɴ ᴄʀᴀᴛᴇ":
+			make gui slot (integers between 0 and 9*3) with gray stained glass pane named "&7"
+			make gui slot 10 with paper named "&a500$" with lore "&750 percent"
+			make gui slot 12 with paper named "&a1000$" with lore "&710 percent"
+			make gui slot 14 with lime dye named "<#35B859>&lᴜɴᴄᴏᴍᴍᴏɴ ᴋᴇʏ" with lore "&75 percent"
+			make gui slot 16 with wither skeleton skull named "&5100 Souls" with lore "&735 percent"
+		open last gui to player
+	else if clicked block is {uncommoncrate}:
+		cancel event
+		create a gui with virtual chest inventory with 3 rows named "         <#35B859>&lᴜɴᴄᴏᴍᴍᴏɴ ᴄʀᴀᴛᴇ":
+			make gui slot 10 with paper named "&a3000$" with lore "&750 percent"
+			make gui slot 12 with paper named "&a7500$" with lore "&710 percent"
+			make gui slot 14 with lime dye named "<#3558B8>&lʀᴀʀᴇ ᴋᴇʏ" with lore "&75 percent"
+			make gui slot 16 with wither skeleton skull named "&5350 Souls" with lore "&735 percent"
+		open last gui to player
+	else if clicked block is {rarecrate}:
+		cancel event
+		create a gui with virtual chest inventory with 3 rows named "            <#3558B8>&lʀᴀʀᴇ ᴄʀᴀᴛᴇ":
+			make gui slot 10 with paper named "&a9000$" with lore "&750 percent"
+			make gui slot 12 with paper named "&a12500$" with lore "&710 percent"
+			make gui slot 14 with lime dye named "<#9135B8>&lᴇᴘɪᴄ ᴋᴇʏ" with lore "&75 percent"
+			make gui slot 16 with wither skeleton skull named "&5500 Souls" with lore "&735 percent"
+		open last gui to player
+	else if clicked block is {epiccrate}:
+		cancel event
+		create a gui with virtual chest inventory with 3 rows named "            <#9135B8>&lᴇᴘɪᴄ ᴄʀᴀᴛᴇ":
+			make gui slot 10 with paper named "&a15000$" with lore "&750 percent"
+			make gui slot 12 with paper named "&a20000$" with lore "&710 percent"
+			make gui slot 14 with lime dye named "<#9CB835>&lʟᴇɢᴇɴᴅᴀʀʏ ᴋᴇʏ" with lore "&75 percent"
+			make gui slot 16 with wither skeleton skull named "&5800 Souls" with lore "&735 percent"
+		open last gui to player
+	else if clicked block is {legendarycrate}:
+		cancel event
+		create a gui with virtual chest inventory with 3 rows named "        <#9CB835>&lʟᴇɢᴇɴᴅᴀʀʏ ᴄʀᴀᴛᴇ":
+			make gui slot 10 with paper named "&a25000$" with lore "&750 percent"
+			make gui slot 12 with paper named "&a32000$" with lore "&710 percent"
+			make gui slot 14 with lime dye named "<#9CB835>&lʟᴇɢᴇɴᴅᴀʀʏ ᴋᴇʏ" with lore "&75 percent"
+			make gui slot 16 with wither skeleton skull named "&51000 Souls" with lore "&735 percent"
+		open last gui to player

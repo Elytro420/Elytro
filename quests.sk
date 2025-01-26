@@ -1,0 +1,215 @@
+command /quest:
+    trigger:
+        quests(player)
+
+function quests(p: player):
+    create a gui with virtual chest inventory with 3 rows named "                &bQuests":
+        make gui slot (integers between 0 and 26) with gray stained glass pane named "&7"
+        
+        make gui slot 9 with lime concrete named "&aStarter Quests &7- Begin Your Journey" with lore "Begin your farming adventure.":
+            starterq({_p})
+        
+        make gui slot 11 with orange concrete named "&6Advanced Quests &7- Cultivate Your Path" with lore "Step up to intermediate challenges.":
+            advancedq({_p})
+
+        make gui slot 15 with red concrete named "&cPro Quests &7- Master the Fields" with lore "Show your farming expertise.":
+            hardq({_p})
+
+        make gui slot 17 with purple concrete named "&5Expert Quests &7- Legend of the Land" with lore "Achieve the pinnacle of mastery.":
+            expertq({_p})
+
+        make gui slot 13 with diamond named "&bHype Quests &7- Bring the Energy" with lore "Unleash hype on the server.":
+            hypeq({_p})
+        
+    open last gui to {_p}
+
+function starterq(p: player):
+    create a gui with virtual chest inventory with 3 rows named "                &aStarter":
+        make gui slot (integers between 0 and 26) with gray stained glass pane named "&7"
+        
+        make gui slot 10 with wheat named "&aFarm 10 Wheat" with lore "Harvest your first crops." and "&fProgress: %{wheat.broken::%{_p}'s uuid%}%/10":
+            if {wheat.broken::%{_p}'s uuid%} >= 10:
+                send "&aQuest completed: Farm 10 Wheat!"
+                add 100 to {_p}'s balance
+                send "&aReward: 50 coins received!"
+            else:
+                send "&cKeep farming to complete this quest."
+        
+        make gui slot 12 with wheat seeds named "&aPlant 10 Seeds" with lore "Replant to grow more." and "&fProgress: %{seeds.planted::%{_p}'s uuid%}%/10":
+            if {seeds.planted::%{_p}'s uuid%} >= 10:
+                send "&aQuest completed: Plant 10 Seeds!"
+                add 100 to {_p}'s balance
+                send "&aReward: 5 Bone Meal received!"
+            else:
+                send "&cKeep planting to complete this quest."
+        
+        make gui slot 14 with wheat block named "&aFarm 50 Wheat" with lore "Handle larger harvests." and "&fProgress: %{wheat.broken::%{_p}'s uuid%}%/50":
+            if {wheat.broken::%{_p}'s uuid%} >= 50:
+                send "&aQuest completed: Farm 50 Wheat!"
+                add 100 to {_p}'s balance
+                send "&aReward: 1 Hay Bale received!"
+            else:
+                send "&cKeep farming to complete this quest."
+        
+        make gui slot 16 with enchanted book named "&aEnchant Your Hoe" with lore "Boost your tools." and "&fCompleted: %{hoe.enchanted::%{_p}'s uuid%}%":
+            if {hoe.enchanted::%{_p}'s uuid%} is set:
+                send "&aQuest completed: Enchant Your Hoe!"
+                add 100 to {_p}'s balance
+                send "&aReward: 1 Enchanted Golden Apple received!"
+            else:
+                send "&cEnchant a hoe to complete this quest."
+        
+        make gui slot 22 with clock named "&a1 Hour of Playtime" with lore "Stay active and explore." and "&fProgress: %hours of time played of {_p}%/1 hour":
+            if time played of {_p} >= 1 hour:
+                send "&aQuest completed: 1 Hour of Playtime!"
+                add 100 to {_p}'s balance
+                send "&aReward: 1 Emerald received!"
+            else:
+                send "&cPlay for at least 1 hour to complete this quest."
+        
+    open last gui to {_p}
+
+function advancedq(p: player):
+    create a gui with virtual chest inventory with 3 rows named "                &6Advanced":
+        make gui slot (integers between 0 and 26) with gray stained glass pane named "&7"
+        
+        make gui slot 10 with carrot named "&6Farm 500 of Any Crop Except Wheat" with lore "Diversify your skills." and "&fProgress: %{crops.broken::%{_p}'s uuid%}%/500":
+            if {crops.broken::%{_p}'s uuid%} >= 500:
+                send "&aQuest completed: Farm 500 of Any Crop Except Wheat!"
+                add 100 to {_p}'s balance
+                send "&aReward: 5 Diamonds received!"
+            else:
+                send "&cKeep farming to complete this quest."
+        
+        make gui slot 12 with wheat seeds named "&6Plant 1000 Seeds" with lore "Commit to growth." and "&fProgress: %{seeds.planted::%{_p}'s uuid%}%/1000":
+            if {seeds.planted::%{_p}'s uuid%} >= 1000:
+                send "&aQuest completed: Plant 1000 Seeds!"
+                add 100 to {_p}'s balance
+                send "&aReward: 1 Enchanted Hoe received!"
+            else:
+                send "&cKeep planting to complete this quest."
+        
+        make gui slot 14 with clock named "&610 Hours of Playtime" with lore "Dedicate your time." and "&fProgress: %hours of time played of {_p}%/10 hours":
+            if time played of {_p} >= 10 hours:
+                send "&aQuest completed: 10 Hours of Playtime!"
+                add 100 to {_p}'s balance
+                send "&aReward: 1 Nether Star received!"
+            else:
+                send "&cPlay for at least 10 hours to complete this quest."
+        
+    open last gui to {_p}
+
+function hardq(p: player):
+    create a gui with virtual chest inventory with 3 rows named "                &cHard":
+        make gui slot (integers between 0 and 26) with gray stained glass pane named "&7"
+        
+        make gui slot 10 with clock named "&c100 Hours of Playtime" with lore "&7Prove your commitment." and "&fProgress: %hours of time played of {_p}%/100 hours":
+            if time played of {_p} >= 100 hours:
+                send "&aQuest completed: 100 Hours of Playtime!"
+                add 100 to {_p}'s balance
+                send "&aReward: 1 Beacon received!"
+            else:
+                send "&cKeep playing to complete this quest."
+
+        make gui slot 12 with golden carrot named "&cFarm 5000 of Every Crop" with lore "&7Master all crops." and "&fProgress: %{all.crops.broken::%{_p}'s uuid%}%/5000":
+            if {all.crops.broken::%{_p}'s uuid%} >= 5000:
+                send "&aQuest completed: Farm 5000 of Every Crop!"
+                add 100 to {_p}'s balance
+                send "&aReward: 10 Netherite Ingots received!"
+            else:
+                send "&cKeep farming to complete this quest."
+
+        make gui slot 14 with wheat seeds named "&cPlant 5000 of Any Crop" with lore "&7Grow crops endlessly." and "&fProgress: %{seeds.planted::%{_p}'s uuid%}%/5000":
+            if {seeds.planted::%{_p}'s uuid%} >= 5000:
+                send "&aQuest completed: Plant 5000 of Any Crop!"
+                add 100 to {_p}'s balance
+                send "&aReward: 64 Golden Carrots received!"
+            else:
+                send "&cKeep planting to complete this quest."
+
+        make gui slot 16 with book named "&cComplete 5 Quests" with lore "&7Show your progress." and "&fCompleted: %{quests.completed::%{_p}'s uuid%}%/5":
+            if {quests.completed::%{_p}'s uuid%} >= 5:
+                send "&aQuest completed: Complete 5 Quests!"
+                add 100 to {_p}'s balance
+                send "&aReward: 1 Enchanted Golden Apple received!"
+            else:
+                send "&cComplete more quests to finish this one."
+
+        make gui slot 18 with barrier named "&cBack":
+            quests({_p})
+
+    open last gui to {_p}
+
+function expertq(p: player):
+    create a gui with virtual chest inventory with 3 rows named "                &5Expert":
+        make gui slot (integers between 0 and 26) with gray stained glass pane named "&7"
+
+        make gui slot 11 with clock named "&5200 Hours of Playtime" with lore "&7Achieve greatness." and "&fProgress: %hours of time played of {_p}%/200 hours":
+            if time played of {_p} >= 200 hours:
+                send "&aQuest completed: 200 Hours of Playtime!"
+                add 100 to {_p}'s balance
+                send "&aReward: 1 Nether Star received!"
+            else:
+                send "&cKeep playing to complete this quest."
+
+        make gui slot 13 with wheat seeds named "&5Plant 10,000 of Any Crop" with lore "&7Break all records." and "&fProgress: %{seeds.planted::%{_p}'s uuid%}%/10000":
+            if {seeds.planted::%{_p}'s uuid%} >= 10000:
+                send "&aQuest completed: Plant 10,000 of Any Crop!"
+                add 100 to {_p}'s balance
+                send "&aReward: 5 Enchanted Diamonds received!"
+            else:
+                send "&cKeep planting to complete this quest."
+
+        make gui slot 15 with book named "&5Complete 10 Quests" with lore "&7Become a legend." and "&fCompleted: %{quests.completed::%{_p}'s uuid%}%/10":
+            if {quests.completed::%{_p}'s uuid%} >= 10:
+                send "&aQuest completed: Complete 10 Quests!"
+                add 100 to {_p}'s balance
+                send "&aReward: 3 Enchanted Books received!"
+            else:
+                send "&cComplete more quests to finish this one."
+
+        make gui slot 18 with barrier named "&cBack":
+            quests({_p})
+
+    open last gui to {_p}
+
+function hypeq(p: player):
+    create a gui with virtual chest inventory with 3 rows named "                &bHype":
+        make gui slot (integers between 0 and 26) with gray stained glass pane named "&7"
+
+        make gui slot 10 with bell named "&bUse 1 Hype Bell" with lore "&7Create excitement." and "&fProgress: %{bells.used::%{_p}'s uuid%}%/1":
+            if {bells.used::%{_p}'s uuid%} >= 1:
+                send "&aQuest completed: Use 1 Hype Bell!"
+                add 100 to {_p}'s balance
+                send "&aReward: 1 Hype Diamond received!"
+            else:
+                send "&cUse at least 1 Hype Bell to complete this quest."
+
+        make gui slot 12 with diamond named "&bObtain 1 Hype Diamond" with lore "&7Show your style." and "&fProgress: %{hypediamonds.obtained::%{_p}'s uuid%}%/1":
+            if {hypediamonds.obtained::%{_p}'s uuid%} >= 1:
+                send "&aQuest completed: Obtain 1 Hype Diamond!"
+                add 100 to {_p}'s balance
+                send "&aReward: 1 Hype Coin received!"
+            else:
+                send "&cObtain at least 1 Hype Diamond to complete this quest."
+
+        make gui slot 14 with bell named "&bUse More Than One Hype Bell" with lore "&7Boost the energy." and "&fProgress: %{bells.used::%{_p}'s uuid%}%/5":
+            if {bells.used::%{_p}'s uuid%} >= 5:
+                send "&aQuest completed: Use More Than One Hype Bell!"
+                add 100 to {_p}'s balance
+                send "&aReward: 5 Hype Bells received!"
+            else:
+                send "&cUse more Hype Bells to complete this quest."
+
+        make gui slot 16 with emerald named "&bAdd 500 Hype Using Bells" with lore "&7Amplify the hype." and "&fProgress: %{hype.points::%{_p}'s uuid%}%/500":
+            if {hype.points::%{_p}'s uuid%} >= 500:
+                send "&aQuest completed: Add 500 Hype Using Bells!"
+                add 100 to {_p}'s balance
+                send "&aReward: 1 Hype Star received!"
+            else:
+                send "&cEarn 500 Hype points to complete this quest."
+
+        make gui slot 18 with barrier named "&cBack":
+            quests({_p})
+
+    open last gui to {_p}

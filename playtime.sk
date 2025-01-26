@@ -1,0 +1,6 @@
+command /playtime [<offline player>]:
+	trigger:
+		if arg is not set:
+			send "<#BC4AEC>&l%player% ᴘʟᴀʏᴛɪᴍᴇ &7|&r %time played of player%" to player
+		else:
+			send "<#BC4AEC>&l%arg%'s ᴘʟᴀʏᴛɪᴍᴇ &7|&r %time played of arg%" to player

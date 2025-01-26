@@ -1,0 +1,15 @@
+import:
+    noah.noahMining.player.PlayerData
+    java.util.UUID
+    
+function getPlayerData(p: player) :: object:
+    return PlayerData.getPlayerData(UUID.fromString((uuid of {_p})))
+    
+function getSouls(player: player) :: number:
+    return getPlayerData({_player}).getTokens()
+    
+function addSouls(player: player, amt: number):
+    getPlayerData({_player}).addTokens({_amt})
+    
+function setSouls(player: player, amt: number):
+    getPlayerData({_player}).setTokens({_amt})

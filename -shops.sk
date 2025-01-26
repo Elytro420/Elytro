@@ -1,0 +1,176 @@
+on load:
+	
+	clearShopTableCache()
+	# Building
+	registershopitem("dirt_block", "Building", "&fDirt", dirt, "&7Just a dirt block", 1, 64, 16, 0)
+	# Misc
+	registershopitem("water_bucket", "Misc", "&fWater Bucket", water bucket, "&7Just a Water Bucket", 1, 64, 16, 0)
+
+
+function shopBuy(p: player, a: integer, ar: integer, i: itemtype):
+	if {_p}'s balance >= {_ar}:
+		give {_p} {_a} of {_i}
+		remove {_ar} from {_p}'s balance
+
+function registershopitem(id: text, c: text, name: text, item: item, desc: text, price: integer, maxstack: integer, bundle: integer, rankitem: integer):
+	set {table::shop::%{_c}%::%{_id}%::name} to {_name}
+	set {table::shop::%{_c}%::%{_id}%::item} to {_item}
+	set {table::shop::%{_c}%::%{_id}%::desc} to {_desc}
+	set {table::shop::%{_c}%::%{_id}%::price} to {_price}
+	set {table::shop::%{_c}%::%{_id}%::maxstack} to {_maxstack}
+	set {table::shop::%{_c}%::%{_id}%::bundle} to {_bundle}
+	set {table::shop::%{_c}%::%{_id}%::rankitem} to {_rankitem}
+	add {_id} to {table::shoplist::%{_c}%::*}
+
+function clearShopTableCache():
+	clear {table::shop::*}
+	clear {table::shoplist::*}
+
+function getShopItem(id: text, type: text) :: item:
+	set {_name} to {table::shop::%{_type}%::%{_id}%::name}
+	set {_desc} to {table::shop::%{_type}%::%{_id}%::desc}
+	set {_item} to {table::shop::%{_type}%::%{_id}%::item}
+	set {_max} to {table::shop::%{_type}%::%{_id}%::maxstack}
+	set {_bundle} to {table::shop::%{_type}%::%{_id}%::bundle}
+	set {_price} to {table::shop::%{_type}%::%{_id}%::price}
+	return {_bundle} of {_item} named "%{_name}%" with lore "%{_desc}%" and "" and " &6💰 &7Price: &e%{_price}%" and " &8⤷ &7Max &8(&7%{_max}%&8)"
+
+function openShopGUI(p: player):
+	create a gui with virtual chest inventory with 4 rows named "Shop Example":
+		make gui slot (integers between 0 and 53) with gray stained glass pane named "&7"
+		make gui slot 13 with {_i}
+		make gui slot 27 with {_p}'s skull named "&a&lBALANCE" with lore "" and "&a&l┃ &a&l%{_p}'s balance%" with hide attributes item flag
+		make gui slot 11 with grass block named "&b&lBUILDING BLOCKS" with lore "" and "&b&l┃ &7Contains blocks that you can use to build with.":
+			openBuildingShop({_p}, "Building")
+		make gui slot 12 with redstone dust named "&b&lREDSTONE" with lore "" and "&b&l┃ &7Contains redstone componenets you can use to make machines.":
+			openRedstoneShop({_p}, "Redstone")
+		make gui slot 13 with water bucket named "&b&lMISC" with lore "" and "&b&l┃ &7Contains essential blocks/items for making functional farms.":
+			openMiscShop({_p}, "Misc")
+		make gui slot 16 with diamond pickaxe named "&b&lTOOLS" with lore "" and "&b&l┃ &7Contains tools that you can use." with hide attributes item flag:
+			openToolsShop({_p}, "Tools")
+		make gui slot 20 with flower pot named "&b&lDECORATION" with lore "" and "&b&l┃ &7Contains decoration blocks.":
+			openDecorShop({_p}, "Decor")
+		make gui slot 21 with wheat seed named "&b&lCROPS" with lore "" and "&b&l┃ &7Contains crops to use in the farm.":
+			openCropsShop({_p}, "Crops")
+		make gui slot 22 with iron chestplate named "&b&lARMOR" with lore "" and "&b&l┃ &7Contains armor to use PVP." with hide attributes item flag:
+			openArmorShop({_p}, "Armor")
+		make gui slot 25 with diamond hoe named "&b&lFARMING TOOLS" with lore "" and "&b&l┃ &7Contains tools needed to farm." with hide attributes item flag:
+			openFarmingShop({_p}, "Farming")
+	open last gui to {_p}
+	
+function openBuildingShop(p: player, type: text):
+	create a gui with virtual chest inventory with 6 rows named "&bBlocks Shop":
+		make gui slot (integers between 0 and 53) with gray stained glass pane named "&7"
+		set {_x} to 0
+		loop 4 times:
+			loop 7 times:
+				add 1 to {_x}
+				if {table::shoplist::%{_type}%::%{_x}%} is set:
+					make gui slot (loop-value-2)+(9*loop-value-1) with getShopItem({table::shoplist::%{_type}%::%{_x}%}, {_type})
+				else:
+					make gui slot (loop-value-2)+(9*loop-value-1) with air
+			remove 3 from {_x1}
+	open last gui to {_p}
+	
+function openRedstoneShop(p: player, type: text):
+	create a gui with virtual chest inventory with 6 rows named "&bRedstone Shop":
+		make gui slot (integers between 0 and 53) with gray stained glass pane named "&7"
+		set {_x} to 0
+		loop 4 times:
+			loop 7 times:
+				add 1 to {_x}
+				if {table::shoplist::%{_type}%::%{_x}%} is set:
+					make gui slot (loop-value-2)+(9*loop-value-1) with getShopItem({table::shoplist::%{_type}%::%{_x}%}, {_type})
+				else:
+					make gui slot (loop-value-2)+(9*loop-value-1) with air
+			remove 3 from {_x1}
+	open last gui to {_p}
+
+function openMiscShop(p: player, type: text):
+	create a gui with virtual chest inventory with 6 rows named "&bMisc Shop":
+		make gui slot (integers between 0 and 53) with gray stained glass pane named "&7"
+		set {_x} to 0
+		loop 4 times:
+			loop 7 times:
+				add 1 to {_x}
+				if {table::shoplist::%{_type}%::%{_x}%} is set:
+					make gui slot (loop-value-2)+(9*loop-value-1) with getShopItem({table::shoplist::%{_type}%::%{_x}%}, {_type})
+				else:
+					make gui slot (loop-value-2)+(9*loop-value-1) with air
+			remove 3 from {_x1}
+	open last gui to {_p}
+	
+	
+function openToolsShop(p: player, type: text):
+	create a gui with virtual chest inventory with 6 rows named "&bTools Shop":
+		make gui slot (integers between 0 and 53) with gray stained glass pane named "&7"
+		set {_x} to 0
+		loop 4 times:
+			loop 7 times:
+				add 1 to {_x}
+				if {table::shoplist::%{_type}%::%{_x}%} is set:
+					make gui slot (loop-value-2)+(9*loop-value-1) with getShopItem({table::shoplist::%{_type}%::%{_x}%}, {_type})
+				else:
+					make gui slot (loop-value-2)+(9*loop-value-1) with air
+			remove 3 from {_x1}
+	open last gui to {_p}
+	
+function openDecorShop(p: player, type: text):
+	create a gui with virtual chest inventory with 6 rows named "&bDecoration Shop":
+		make gui slot (integers between 0 and 53) with gray stained glass pane named "&7"
+		set {_x} to 0
+		loop 4 times:
+			loop 7 times:
+				add 1 to {_x}
+				if {table::shoplist::%{_type}%::%{_x}%} is set:
+					make gui slot (loop-value-2)+(9*loop-value-1) with getShopItem({table::shoplist::%{_type}%::%{_x}%}, {_type})
+				else:
+					make gui slot (loop-value-2)+(9*loop-value-1) with air
+			remove 3 from {_x1}
+	open last gui to {_p}
+	
+function openCropsShop(p: player, type: text):
+	create a gui with virtual chest inventory with 6 rows named "&bCrops Shop":
+		make gui slot (integers between 0 and 53) with gray stained glass pane named "&7"
+		set {_x} to 0
+		loop 4 times:
+			loop 7 times:
+				add 1 to {_x}
+				if {table::shoplist::%{_type}%::%{_x}%} is set:
+					make gui slot (loop-value-2)+(9*loop-value-1) with getShopItem({table::shoplist::%{_type}%::%{_x}%}, {_type})
+				else:
+					make gui slot (loop-value-2)+(9*loop-value-1) with air
+			remove 3 from {_x1}
+	open last gui to {_p}
+	
+function openArmorShop(p: player, type: text):
+	create a gui with virtual chest inventory with 6 rows named "&bArmor Shop":
+		make gui slot (integers between 0 and 53) with gray stained glass pane named "&7"
+		set {_x} to 0
+		loop 4 times:
+			loop 7 times:
+				add 1 to {_x}
+				if {table::shoplist::%{_type}%::%{_x}%} is set:
+					make gui slot (loop-value-2)+(9*loop-value-1) with getShopItem({table::shoplist::%{_type}%::%{_x}%}, {_type})
+				else:
+					make gui slot (loop-value-2)+(9*loop-value-1) with air
+			remove 3 from {_x1}
+	open last gui to {_p}
+	
+function openFarmingShop(p: player, type: text):
+	create a gui with virtual chest inventory with 6 rows named "&bFarming Shop":
+		make gui slot (integers between 0 and 53) with gray stained glass pane named "&7"
+		set {_x} to 0
+		loop 4 times:
+			loop 7 times:
+				add 1 to {_x}
+				if {table::shoplist::%{_type}%::%{_x}%} is set:
+					make gui slot (loop-value-2)+(9*loop-value-1) with getShopItem({table::shoplist::%{_type}%::%{_x}%}, {_type})
+				else:
+					make gui slot (loop-value-2)+(9*loop-value-1) with air
+			remove 3 from {_x1}
+	open last gui to {_p}
+
+command /shop:
+	trigger:
+		openShopGUI(player)

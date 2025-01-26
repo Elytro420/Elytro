@@ -1,0 +1,23 @@
+function killEntities():
+	set {_entities::*} to all entities where [input is not a player]
+	set {_entities1::*} to size of all entities where [input is not a player or block display]
+	kill {_entities::*}
+	broadcast "&7[&5Elytro&7] &fSuccessfully killed &c%{_entities1::*}% &fentities!"
+
+every 25 minutes:
+	broadcast "&7[&5Elytro&7] &aGround items will clear in &c5!"
+	wait 1 second
+	broadcast "&7[&5Elytro&7] &aGround items will clear in &c4!"
+	wait 1 second
+	broadcast "&7[&5Elytro&7] &aGround items will clear in &c3!"
+	wait 1 second
+	broadcast "&7[&5Elytro&7] &aGround items will clear in &c2!"
+	wait 1 second
+	broadcast "&7[&5Elytro&7] &aGround items will clear in &c1!"
+	wait 1 second
+	killEntities()
+	
+command /clearlag:
+	permission: clear.lag
+	trigger:
+		killEntities()
